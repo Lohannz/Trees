@@ -1,8 +1,14 @@
 #include<stdio.h>
 #include<stdlib.h>
+#include<string.h>
+typedef struct Pessoa{
+    int id;
+    char nome[21];
+    int idade;
+} Pessoa;
 
 typedef struct Node{
-    int value;
+    Pessoa *data;
     struct Node *esquerda;
     struct Node *direita;
 }Node;
@@ -16,23 +22,23 @@ int empty(Node *tree){
         return 1;
     return 0;
 }
-Node *CriarNovoNo(int value){
+Node *CriarNovoNo(Pessoa *p){
     Node *novoNo = (Node*) malloc(sizeof(Node));
-    novoNo->value = value;
+    novoNo->data = p;
     novoNo->esquerda = NULL;
     novoNo->direita = NULL;
     return novoNo;
 }
 
-Node *insert(Node *tree, int value){
+Node *insert(Node *tree, Pessoa *p){
     if(empty(tree)){
-        tree = CriarNovoNo(value);
+        tree = CriarNovoNo(p);
     }
 
-    else if (value <= tree->value)
-        tree->esquerda = insert(tree->esquerda, value);
+    else if (p->id <= tree->data->id)
+        tree->esquerda = insert(tree->esquerda, p);
     else 
-        tree->direita = insert(tree->direita, value);
+        tree->direita = insert(tree->direita, p);
 
     return tree;
 }
@@ -40,8 +46,14 @@ Node *insert(Node *tree, int value){
 // Em ordem (in-order): esquerda, raiz, direita
 void inOrder(struct Node* root) {
     if (root != NULL) {
+        
         inOrder(root->esquerda);
-        printf("%d ", root->value);
+
+        printf("---------------------------\n");
+        printf("id:%i\n", root->data->id);
+        printf("nome:%s\n", root->data->nome);
+        printf("idade:%d ", root->data->idade);
+        printf("\n---------------------------\n");
         inOrder(root->direita);
     }
 }
@@ -49,7 +61,11 @@ void inOrder(struct Node* root) {
 // Pré-ordem (pre-order): raiz, esquerda, direita
 void preOrder(struct Node* root) {
     if (root != NULL) {
-        printf("%d ", root->value);
+        printf("---------------------------\n");
+        printf("id:%i\n", root->data->id);
+        printf("nome:%s\n", root->data->nome);
+        printf("idade:%d ", root->data->idade);
+        printf("\n---------------------------\n");;
         preOrder(root->esquerda);
         preOrder(root->direita);
     }
@@ -60,27 +76,39 @@ void postOrder(struct Node* root) {
     if (root != NULL) {
         postOrder(root->esquerda);
         postOrder(root->direita);
-        printf("%d ", root->value);
+        printf("---------------------------\n");
+        printf("id:%i\n", root->data->id);
+        printf("nome:%s\n", root->data->nome);
+        printf("idade:%d ", root->data->idade);
+        printf("\n---------------------------\n");
     }
 }
 
-int verifica_valor_arv(Node *tree, int value){
-    if(empty(tree) == 1) return 0;
+Pessoa *verifica_pessoa_arv(Node *tree, int id_procurado){
+    if(empty(tree) == 1) return NULL;
 
-    if (tree->value == value) return 1;
-    else if (tree->value > value) return verifica_valor_arv(tree->esquerda, value);
-    else return verifica_valor_arv(tree->direita, value);
+    if (tree->data->id == id_procurado) 
+        return tree->data;
+
+    else if (tree->data->id > id_procurado) return verifica_pessoa_arv(tree->esquerda, id_procurado);
+    else return verifica_pessoa_arv(tree->direita, id_procurado);
 
 }
 
 int main(){
-    Node* Minha_Arvore = CriarNovoNo(3);
 
-    Minha_Arvore = insert(Minha_Arvore, 2);
-    Minha_Arvore = insert(Minha_Arvore, 9);
-    Minha_Arvore = insert(Minha_Arvore, 3);
-    Minha_Arvore = insert(Minha_Arvore, 4);
+    Pessoa p1 = {1,"Lohan", 19};
+    Pessoa p2 = {2,"Luiza", 20};
+    Pessoa p3 = {3,"Lavinia", 18};
 
-    preOrder(Minha_Arvore);
+    Node* Minha_Arvore = CriarNovoNo(&p1);
+    insert(Minha_Arvore, &p2);
+    insert(Minha_Arvore, &p3);
+
+    Pessoa *pessoa_procurada = verifica_pessoa_arv(Minha_Arvore, 2);
+
+    printf("%s", pessoa_procurada->nome);
+    
+
     return 0;
 }
